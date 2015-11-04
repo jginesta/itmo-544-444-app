@@ -19,8 +19,9 @@ declare -a InstanceArray
 mapfile -t InstanceArray< <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --key-name $4 --security-group-ids $5 --subnet-id $6 --associate-public-ip-address --iam-instance-profile Name=$7 --user-data file://../itmo-544-444-env/install-env.sh --output table | grep InstanceId | sed "s/|//g" | tr -d ' ' | sed "s/InstanceId//g")
 
 echo ${InstanceArray[@]}
-aws ec2 wait instance-running --instance-ids ${InstanceArray[@]}
+sudo aws ec2 wait instance-running --instance-ids ${InstanceArray[@]}
 echo "Instances are running successfully"
+./launch-rds.sh
 
 LoadBalancerURL=(`aws elb create-load-balancer --load-balancer-name itmo544-jgl-lb --listeners Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80 --subnets $6 --security-groups $5 --output=text`); echo $LoadBalancerURL
 
@@ -44,7 +45,7 @@ aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-extended-a
 
 aws cloudwatch put-metric-alarm --alarm-name cpugreaterthan30 --alarm-description "Alarm when CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 300 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold  --dimensions Name=itmo-544-extended-auto-scaling-group-2,Value=itmo-544-extended-auto-scaling-group-2 --evaluation-periods 2 --alarm-actions arn:aws:sns:us-east-1:111122223333:MyTopic --unit Percent
 aws cloudwatch put-metric-alarm --alarm-name cpulessthan10 --alarm-description "Alarm when CPU is less than 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 300 --threshold 10 --comparison-operator LessThanOrEqualToThreshold  --dimensions Name=itmo-544-extended-auto-scaling-group-2,Value=itmo-544-extended-auto-scaling-group-2 --evaluation-periods 2 --alarm-actions arn:aws:sns:us-east-1:111122223333:MyTopic --unit Percent
-./launch-rds.sh
+
 firefox $LoadBalancerURL &
 export LoadBalancerURL
 
