@@ -1,12 +1,12 @@
 #!/bin/bash
-sudo apt-get update -y
+#sudo apt-get update -y
 
-sudo apt-get -y install apache2 git php5 php5-curl mysql-client curl php5-mysql
+#sudo apt-get -y install apache2 git php5 php5-curl mysql-client curl php5-mysql
 
-sudo curl -sS https://getcomposer.org/installer | sudo php
+#sudo curl -sS https://getcomposer.org/installer | sudo php
 # &> /tmp/getcomposer.txt
 
-sudo php composer.phar require aws/aws-sdk-php 
+#sudo php composer.phar require aws/aws-sdk-php 
 #&> /tmp/runcomposer.txt
 
 
@@ -18,4 +18,5 @@ aws sns set-topic-attributes --topic-arn $ARN --attribute-name DisplayName --att
 
 aws sns subscribe --topic-arn $ARN --protocol email --notification-endpoint jginesta@hawk.iit.edu
 
-php MP2.php
+
+php ../itmo544-444-fall2015/MP2.php
