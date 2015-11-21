@@ -38,7 +38,7 @@ aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-ext
 aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-extended-auto-scaling-group-2 --policy-name CloudMetricsUp --scaling-adjustment 1 --adjustment-type ChangeInCapacity --cooldown 60  
 
 #Creating a topic
-ARN=(`aws sns create-topic --name mp2-alarm`); 
+ARN=(`aws sns create-topic --name mp2-alarm-j`); 
 echo "This is the ARN for the alarm topic: $ARN"
 aws sns set-topic-attributes --topic-arn $ARN --attribute-name DisplayName --attribute-value mp2
 aws sns subscribe --topic-arn $ARN --protocol email --notification-endpoint jessicaginesta@hotmail.com
@@ -67,6 +67,7 @@ echo "read replica created"
 #Creating a table in the database
 sudo php ../itmo544-444-fall2015/setup-lite.php
 echo "db table created"  
+sudo php ../itmo544-444-fall2015/MP2Subsciption.php
 
 echo -e "\nWaiting for 3:30 minutes for LB to create before opening in the web browser"
 for i in {0..210}; do echo -ne '.';sleep 1;done
