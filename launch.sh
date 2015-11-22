@@ -66,7 +66,9 @@ echo "read replica created"
 
 #Creating a table in the database
 sudo php ../itmo544-444-fall2015/setup-lite.php
-echo "db table created"  
+echo "db table created"
+sudo php ../itmo544-444-fall2015/MP2Subscription.php
+  
 
 echo -e "\nWaiting for 3:30 minutes for LB to create before opening in the web browser"
 for i in {0..210}; do echo -ne '.';sleep 1;done
