@@ -30,7 +30,9 @@ echo -e "\nFinished launching the load balancer and sleeping for 30 seconds"
 for i in {0..30}; do echo -ne '.';sleep 1;done
 aws elb register-instances-with-load-balancer  --load-balancer-name itmo544-jgl-lb --instances ${InstanceArray[@]}
 aws elb configure-health-check --load-balancer-name itmo544-jgl-lb --health-check Target=HTTP:80/index.html,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
-#aws elb create-lb-cookie-stickiness-policy --load-balancer-name itmo544-jgl-lb --policy-name my-duration-cookie-policy --cookie-expiration-period 60
+
+#Create the stickiness policy
+aws elb create-lb-cookie-stickiness-policy --load-balancer-name itmo544-jgl-lb --policy-name my-duration-cookie-policy --cookie-expiration-period 60
 
 #Creating a Launch Configuration and Autoscaling group
 aws autoscaling create-launch-configuration --launch-configuration-name itmo544-launch-config-jgl --image-id $1 --key-name $4  --security-groups $5 --instance-type $3 --user-data file://../itmo-544-444-env/install-env.sh --iam-instance-profile $7
@@ -67,7 +69,7 @@ echo "read replica created"
 #Creating a table in the database
 sudo php ../itmo544-444-fall2015/setup-lite.php
 echo "db table created"
-sudo php ../itmo544-444-fall2015/MP2Subscription.php
+#sudo php ../itmo544-444-fall2015/MP2Subscription.php
   
 
 echo -e "\nWaiting for 3:30 minutes for LB to create before opening in the web browser"
