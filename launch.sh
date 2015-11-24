@@ -63,11 +63,11 @@ sudo aws rds wait db-instance-available --db-instance-identifier mp1-jgl
 echo "db instance created"         
 
 #Creating a read replica
-sudo aws rds create-db-instance-read-replica --db-instance-identifier mp1-jgl-read --source-db-instance-identifier mp1-jgl --publicly-accessible
+aws rds create-db-instance-read-replica --db-instance-identifier mp1-jgl-read --source-db-instance-identifier mp1-jgl --publicly-accessible
 echo "read replica created"  
 
 #Creating a table in the database
-sudo php ../itmo544-444-fall2015/setup-lite.php
+php ../itmo544-444-fall2015/setup-lite.php
 echo "db table created"
 #sudo php ../itmo544-444-fall2015/MP2Subscription.php
   
