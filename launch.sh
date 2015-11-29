@@ -16,7 +16,6 @@
 
 # Cleanup Script to remove old instances, databases, etc
 ./cleanup.sh
-###sudo apt-get install php5-cli php5-mysql
 declare -a InstanceArray
 
 mapfile -t InstanceArray< <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --key-name $4 --security-group-ids $5 --subnet-id $6 --associate-public-ip-address --iam-instance-profile Name=$7 --user-data file://../itmo-544-444-env/install-env.sh --output table | grep InstanceId | sed "s/|//g" | tr -d ' ' | sed "s/InstanceId//g")
@@ -49,34 +48,30 @@ aws sns subscribe --topic-arn $ARN --protocol email --notification-endpoint jess
 aws cloudwatch put-metric-alarm --alarm-name cpugreaterthan30 --alarm-description "Alarm when CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 300 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold  --dimensions Name=itmo-544-extended-auto-scaling-group-2,Value=itmo-544-extended-auto-scaling-group-2 --evaluation-periods 2 --alarm-actions $ARN --unit Percent
 aws cloudwatch put-metric-alarm --alarm-name cpulessthan10 --alarm-description "Alarm when CPU is less than 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 300 --threshold 10 --comparison-operator LessThanOrEqualToThreshold  --dimensions Name=itmo-544-extended-auto-scaling-group-2,Value=itmo-544-extended-auto-scaling-group-2 --evaluation-periods 2 --alarm-actions $ARN --unit Percent
 
-
 #Testing alarm for cloudwatch
 aws cloudwatch set-alarm-state  --alarm-name cpugreaterthan30 --state-reason "initializing" --state-value OK
 aws cloudwatch set-alarm-state  --alarm-name cpugreaterthan30 --state-reason "initializing" --state-value ALARM
 
 #Creating and RDS instance
 sudo aws rds create-db-subnet-group --db-subnet-group-name itmo544-mp1-sgn  --subnet-ids subnet-e42819cf subnet-140de262 --db-subnet-group-description "itmosg-jgl"
-
 sudo aws rds create-db-instance --db-name customerrecords --db-instance-identifier mp1-jgl --db-instance-class db.t1.micro --engine MySQL --master-username controller --master-user-password letmein888 --allocated-storage 5 --vpc-security-group-ids sg-6e7a9708 --db-subnet-group-name itmo544-mp1-sgn --publicly-accessible
-
 sudo aws rds wait db-instance-available --db-instance-identifier mp1-jgl
 echo "db instance created"         
 
 #Creating a read replica
-##aws rds create-db-instance-read-replica --db-instance-identifier mp1-jgl-read --source-db-instance-identifier mp1-jgl --publicly-accessible
-##echo "read replica created"  
+aws rds create-db-instance-read-replica --db-instance-identifier mp1-jgl-read --source-db-instance-identifier mp1-jgl --publicly-accessible
+echo "read replica created"  
 
 #Creating a table in the database
 sudo curl -sS https://getcomposer.org/installer | sudo php
 sudo php composer.phar require aws/aws-sdk-php 
 php ../itmo544-444-fall2015/setup-lite.php
 echo "db table created"
-#sudo php ../itmo544-444-fall2015/MP2Subscription.php
-  
 
 echo -e "\nWaiting for 3:30 minutes for LB to create before opening in the web browser"
 for i in {0..210}; do echo -ne '.';sleep 1;done
 
+#Launching Load balancer in firefox
 firefox $LoadBalancerURL &
 
 echo -e "Everything worked correctly"
