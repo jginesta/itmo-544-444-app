@@ -67,6 +67,8 @@ echo "db instance created"
 ##echo "read replica created"  
 
 #Creating a table in the database
+sudo curl -sS https://getcomposer.org/installer | sudo php
+sudo php composer.phar require aws/aws-sdk-php 
 php ../itmo544-444-fall2015/setup-lite.php
 echo "db table created"
 #sudo php ../itmo544-444-fall2015/MP2Subscription.php
